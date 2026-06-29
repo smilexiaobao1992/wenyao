@@ -93,7 +93,8 @@ a {
 
 .site-header,
 .hero,
-.method-strip {
+.method-strip,
+.hexagram-library {
   position: relative;
   z-index: 2;
 }
@@ -1082,6 +1083,279 @@ p {
   text-align: center;
 }
 
+/* --------------------------------------------------------------------------
+   Hexagram library
+   -------------------------------------------------------------------------- */
+
+.hexagram-library {
+  padding: 58px max(28px, calc((100vw - 1200px) / 2)) 68px;
+  border-top: 1px solid rgba(92, 72, 35, 0.16);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(153, 40, 22, 0.08), transparent 22rem),
+    linear-gradient(180deg, rgba(246, 239, 222, 0.74), rgba(238, 226, 198, 0.58));
+}
+
+.library-head {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 360px);
+  gap: 26px;
+  align-items: end;
+  max-width: 1200px;
+  margin: 0 auto 30px;
+}
+
+.library-head h2 {
+  color: #2d2418;
+  font-size: clamp(30px, 3.2vw, 46px);
+  letter-spacing: 0.08em;
+}
+
+.library-head p {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.library-search {
+  display: grid;
+  gap: 8px;
+}
+
+.library-search span {
+  color: var(--bronze-deep);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.library-search input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid rgba(95, 72, 37, 0.32);
+  border-radius: var(--radius-md);
+  color: var(--ink);
+  background: rgba(255, 251, 239, 0.74);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.34);
+  font: inherit;
+  font-size: 16px;
+  outline: none;
+  transition:
+    border-color var(--transition-fast) ease,
+    box-shadow var(--transition-fast) ease,
+    background var(--transition-fast) ease;
+}
+
+.library-search input:focus {
+  border-color: rgba(153, 40, 22, 0.58);
+  background: rgba(255, 253, 245, 0.92);
+  box-shadow: 0 0 0 3px rgba(153, 40, 22, 0.1);
+}
+
+.library-layout {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 30px;
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hexagram-index {
+  position: sticky;
+  top: 92px;
+  overflow: hidden;
+  border: 1px solid rgba(95, 72, 37, 0.26);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 236, 0.82), rgba(241, 230, 202, 0.82)),
+    var(--paper);
+  box-shadow: 0 16px 34px rgba(55, 37, 13, 0.1);
+}
+
+.index-count {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid rgba(95, 72, 37, 0.16);
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+}
+
+.index-list {
+  display: grid;
+  max-height: 662px;
+  overflow: auto;
+  padding: 8px;
+}
+
+.index-list button {
+  display: grid;
+  grid-template-columns: 44px 48px 1fr;
+  gap: 8px;
+  align-items: center;
+  min-height: 58px;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid rgba(95, 72, 37, 0.1);
+  border-radius: var(--radius-sm);
+  color: #4a3a25;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    color var(--transition-fast) ease,
+    background var(--transition-fast) ease,
+    transform var(--transition-fast) ease;
+}
+
+.index-list button:hover,
+.index-list button:focus-visible,
+.index-list .is-active {
+  color: var(--ink);
+  background: rgba(153, 40, 22, 0.08);
+}
+
+.index-list button:hover {
+  transform: translateX(2px);
+}
+
+.index-list span {
+  color: var(--cinnabar);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.index-list strong {
+  font-size: 21px;
+  letter-spacing: 0.06em;
+}
+
+.index-list small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hexagram-reader,
+.library-empty {
+  position: relative;
+  min-height: 680px;
+  border: 1px solid rgba(95, 72, 37, 0.22);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(153, 40, 22, 0.04), transparent 34%),
+    rgba(250, 245, 232, 0.78);
+  box-shadow: var(--shadow);
+}
+
+.hexagram-reader {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.58fr) minmax(360px, 1fr);
+  gap: 22px;
+  align-items: start;
+  padding: 24px;
+}
+
+.reader-copy {
+  position: sticky;
+  top: 92px;
+  padding: 8px 6px;
+}
+
+.reader-copy span {
+  color: var(--cinnabar);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.reader-copy h3 {
+  margin-top: 14px;
+  color: var(--ink);
+  font-size: clamp(56px, 5vw, 88px);
+  line-height: 0.95;
+  letter-spacing: 0.12em;
+}
+
+.reader-copy p {
+  margin-top: 20px;
+  color: #4d3b25;
+  font-size: 18px;
+  line-height: 1.8;
+}
+
+.reader-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.reader-tags em {
+  padding: 6px 10px;
+  border: 1px solid rgba(139, 106, 53, 0.28);
+  border-radius: var(--radius-sm);
+  color: #74521e;
+  background: rgba(255, 250, 236, 0.58);
+  font-size: 13px;
+  font-style: normal;
+}
+
+.hexagram-page {
+  position: relative;
+  max-height: 760px;
+  margin: 0;
+  overflow: auto;
+  border: 1px solid rgba(95, 72, 37, 0.22);
+  border-radius: var(--radius-sm);
+  background: #f8f4e9;
+  box-shadow: 0 18px 36px rgba(55, 37, 13, 0.14);
+}
+
+.hexagram-page img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.reader-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.reader-actions button {
+  min-width: 112px;
+  border: 1px solid rgba(95, 72, 37, 0.28);
+  border-radius: var(--radius-md);
+  color: #5a4b35;
+  background: rgba(255, 250, 236, 0.68);
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast) ease,
+    border-color var(--transition-fast) ease,
+    background var(--transition-fast) ease;
+}
+
+.reader-actions button:hover,
+.reader-actions button:focus-visible {
+  border-color: rgba(153, 40, 22, 0.42);
+  background: rgba(255, 250, 236, 0.92);
+  transform: translateY(-1px);
+}
+
+.library-empty {
+  display: grid;
+  place-items: center;
+  padding: 40px;
+  color: var(--muted);
+  font-size: 18px;
+}
+
 .site-footer {
   position: relative;
   z-index: 2;
@@ -1168,6 +1442,39 @@ p {
 
   .method-steps {
     grid-template-columns: repeat(3, minmax(160px, 1fr));
+  }
+
+  .hexagram-library {
+    padding-right: 22px;
+    padding-left: 22px;
+  }
+
+  .library-layout {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 22px;
+  }
+
+  .hexagram-reader {
+    grid-template-columns: 1fr;
+  }
+
+  .reader-copy {
+    position: static;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 18px;
+    align-items: end;
+  }
+
+  .reader-copy span,
+  .reader-copy p,
+  .reader-tags {
+    grid-column: 1 / -1;
+  }
+
+  .reader-copy h3 {
+    margin-top: 8px;
+    font-size: clamp(48px, 8vw, 72px);
   }
 }
 
@@ -1319,6 +1626,64 @@ p {
 
   .method-step p {
     text-align: left;
+  }
+
+  .hexagram-library {
+    padding: 42px 22px 50px;
+  }
+
+  .library-head {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .library-head h2 {
+    font-size: 30px;
+  }
+
+  .library-head p {
+    font-size: 14px;
+  }
+
+  .library-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hexagram-index {
+    position: relative;
+    top: auto;
+  }
+
+  .index-list {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(170px, 1fr);
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .index-list button {
+    grid-template-columns: 34px 38px 1fr;
+    border-right: 1px solid rgba(95, 72, 37, 0.1);
+    border-bottom: 0;
+  }
+
+  .index-list strong {
+    font-size: 18px;
+  }
+
+  .hexagram-reader,
+  .library-empty {
+    min-height: 0;
+  }
+
+  .hexagram-reader {
+    padding: 18px;
+  }
+
+  .hexagram-page {
+    max-height: 72vh;
   }
 }
 
@@ -1598,6 +1963,36 @@ p {
 
   .method-step p {
     font-size: 13px;
+  }
+
+  .hexagram-library {
+    padding: 36px 18px 44px;
+  }
+
+  .library-search input {
+    min-height: 46px;
+    font-size: 15px;
+  }
+
+  .hexagram-reader {
+    padding: 14px;
+  }
+
+  .reader-copy h3 {
+    font-size: clamp(42px, 18vw, 64px);
+  }
+
+  .reader-copy p {
+    margin-top: 14px;
+    font-size: 16px;
+  }
+
+  .reader-actions {
+    justify-content: stretch;
+  }
+
+  .reader-actions button {
+    flex: 1;
   }
 
   .site-footer {

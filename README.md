@@ -9,6 +9,7 @@
 - 三枚铜钱起卦，六次投掷生成六爻
 - 按 6 / 7 / 8 / 9 推导阴爻、阳爻、老阴、老阳
 - 根据六爻映射 64 卦，展示本卦、动爻和之卦
+- 六十四卦卦库，支持按卦序、卦名、卦辞和关键词搜索
 - 一键复制 AI 解卦提示词
 - 铜钱翻转动效、山水背景动效和响应式布局
 - WebP 素材优化，改善移动端加载速度
@@ -77,6 +78,8 @@ pages_build_output_dir = "dist"
 ```text
 .
 ├── public/assets/       # 页面图片素材
+├── public/assets/hexagrams/
+│   └── hexagram-*.webp  # 64 卦原页图片
 ├── src/App.jsx          # 页面结构与交互
 ├── src/iching.js        # 摇卦和 64 卦推导逻辑
 ├── src/iching.test.js   # 核心逻辑测试
@@ -113,6 +116,12 @@ pages_build_output_dir = "dist"
 - `bronze-coin.webp`
 - `shanshui-bg.webp`
 - `result-frame.webp`
+
+64 卦原页图片位于 `public/assets/hexagrams/`，文件名按卦序编号：
+
+```text
+hexagram-01.webp ... hexagram-64.webp
+```
 
 PNG 文件保留为原始或兼容素材。移动端加载慢时，优先检查首屏素材体积和 Cloudflare 缓存状态。
 

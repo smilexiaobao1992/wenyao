@@ -3,6 +3,7 @@ import {
   buildAiPrompt,
   changingLineNames,
   deriveHexagram,
+  HEXAGRAMS,
   lineFromCoins,
   lineLabel,
   randomCoins,
@@ -12,6 +13,14 @@ import {
 const LINE_NAMES = ["初爻", "二爻", "三爻", "四爻", "五爻", "上爻"];
 const PROGRESS_LABELS = ["上爻", "五爻", "四爻", "三爻", "二爻", "初爻"];
 const EMPTY_LINES = [null, null, null, null, null, null];
+const HEXAGRAM_LIBRARY = Object.entries(HEXAGRAMS).map(([index, hexagram]) => ({
+  index: Number(index),
+  image: `/assets/hexagrams/hexagram-${String(index).padStart(2, "0")}.webp`,
+  name: hexagram.name,
+  judgment: hexagram.judgment,
+  meanings: hexagram.meanings,
+  searchText: `${index} ${hexagram.name} ${hexagram.judgment} ${hexagram.meanings.join(" ")}`,
+}));
 
 export function App() {
   const [lines, setLines] = useState([]);
@@ -20,6 +29,8 @@ export function App() {
   const [copied, setCopied] = useState(false);
   const [isCasting, setIsCasting] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hexagramQuery, setHexagramQuery] = useState("");
+  const [selectedHexagramIndex, setSelectedHexagramIndex] = useState(1);
 
   const isComplete = lines.length === 6;
   const original = useMemo(() => (isComplete ? deriveHexagram(lines) : null), [isComplete, lines]);
@@ -36,6 +47,26 @@ export function App() {
     [isComplete, lines],
   );
   const visibleLines = isComplete ? lines : [...lines, ...EMPTY_LINES].slice(0, 6);
+  const filteredHexagrams = useMemo(() => {
+    const query = hexagramQuery.trim().toLowerCase();
+    if (!query) return HEXAGRAM_LIBRARY;
+
+    return HEXAGRAM_LIBRARY.filter((hexagram) => hexagram.searchText.toLowerCase().includes(query));
+  }, [hexagramQuery]);
+  const selectedHexagram = useMemo(() => {
+    const selected = HEXAGRAM_LIBRARY.find((hexagram) => hexagram.index === selectedHexagramIndex);
+    return filteredHexagrams.find((hexagram) => hexagram.index === selectedHexagramIndex) ?? filteredHexagrams[0] ?? selected;
+  }, [filteredHexagrams, selectedHexagramIndex]);
+  const hexagramNavigation = filteredHexagrams.length > 0 ? filteredHexagrams : HEXAGRAM_LIBRARY;
+  const activeHexagramPosition = selectedHexagram
+    ? hexagramNavigation.findIndex((hexagram) => hexagram.index === selectedHexagram.index)
+    : -1;
+  const previousHexagram = activeHexagramPosition >= 0
+    ? hexagramNavigation[(activeHexagramPosition - 1 + hexagramNavigation.length) % hexagramNavigation.length]
+    : null;
+  const nextHexagram = activeHexagramPosition >= 0
+    ? hexagramNavigation[(activeHexagramPosition + 1) % hexagramNavigation.length]
+    : null;
 
   function castLine() {
     if (isCasting) return;
@@ -77,6 +108,7 @@ export function App() {
         </a>
         <nav className={menuOpen ? "desktop-nav is-open" : "desktop-nav"} id="site-nav" aria-label="页面导航">
           <a href="#method" onClick={() => setMenuOpen(false)}>玩法</a>
+          <a href="#hexagrams" onClick={() => setMenuOpen(false)}>卦库</a>
           <a href="#result" onClick={() => setMenuOpen(false)}>卦象</a>
           <a href="#ai" onClick={() => setMenuOpen(false)}>AI 解卦</a>
         </nav>
@@ -203,6 +235,87 @@ export function App() {
               <p>{body}</p>
             </article>
           ))}
+        </div>
+      </section>
+
+      <section className="hexagram-library" id="hexagrams" aria-label="六十四卦卦库">
+        <div className="library-head">
+          <div>
+            <h2>六十四卦</h2>
+            <p>按卦序、卦名、卦辞或关键词检索原页。</p>
+          </div>
+          <label className="library-search">
+            <span>搜卦</span>
+            <input
+              type="search"
+              value={hexagramQuery}
+              placeholder="乾、泰、元亨、厚德..."
+              onChange={(event) => setHexagramQuery(event.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className="library-layout">
+          <div className="hexagram-index" aria-label="卦序列表">
+            <p className="index-count">{filteredHexagrams.length} / 64</p>
+            <div className="index-list">
+              {filteredHexagrams.map((hexagram) => (
+                <button
+                  className={selectedHexagram?.index === hexagram.index ? "is-active" : ""}
+                  type="button"
+                  key={hexagram.index}
+                  onClick={() => setSelectedHexagramIndex(hexagram.index)}
+                >
+                  <span>{String(hexagram.index).padStart(2, "0")}</span>
+                  <strong>{hexagram.name}</strong>
+                  <small>{hexagram.meanings.join(" · ")}</small>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {selectedHexagram ? (
+            <article className="hexagram-reader" aria-live="polite">
+              <div className="reader-copy">
+                <span>第 {selectedHexagram.index} 卦</span>
+                <h3>{selectedHexagram.name}</h3>
+                <p>{selectedHexagram.judgment}</p>
+                <div className="reader-tags">
+                  {selectedHexagram.meanings.map((meaning) => (
+                    <em key={meaning}>{meaning}</em>
+                  ))}
+                </div>
+              </div>
+              <figure className="hexagram-page">
+                <img
+                  src={selectedHexagram.image}
+                  width="900"
+                  height="1320"
+                  alt={`第 ${selectedHexagram.index} 卦 ${selectedHexagram.name} 卦象原页`}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </figure>
+              <div className="reader-actions">
+                <button
+                  type="button"
+                  onClick={() => previousHexagram && setSelectedHexagramIndex(previousHexagram.index)}
+                >
+                  上一卦
+                </button>
+                <button
+                  type="button"
+                  onClick={() => nextHexagram && setSelectedHexagramIndex(nextHexagram.index)}
+                >
+                  下一卦
+                </button>
+              </div>
+            </article>
+          ) : (
+            <div className="library-empty">
+              <p>未找到对应卦象。</p>
+            </div>
+          )}
         </div>
       </section>
 

@@ -205,6 +205,10 @@ export function App() {
           ))}
         </div>
       </section>
+
+      <footer className="site-footer" aria-label="版权信息">
+        <p>© 2026 摇一摇. All rights reserved.</p>
+      </footer>
     </main>
   );
 }

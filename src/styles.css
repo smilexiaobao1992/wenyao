@@ -109,8 +109,8 @@ a {
   left: 0;
   height: 670px;
   background:
-    url("/assets/shanshui-bg.png") left bottom / min(860px, 58vw) auto no-repeat,
-    url("/assets/shanshui-bg.png") right bottom / min(780px, 52vw) auto no-repeat,
+    url("/assets/shanshui-bg.webp") left bottom / min(860px, 58vw) auto no-repeat,
+    url("/assets/shanshui-bg.webp") right bottom / min(780px, 52vw) auto no-repeat,
     linear-gradient(180deg, transparent 0%, rgba(230, 220, 194, 0.26) 64%, transparent 100%);
   mix-blend-mode: multiply;
   opacity: 0.26;
@@ -621,11 +621,19 @@ p {
   grid-column: 1 / -1;
 }
 
+.coin picture,
 .coin img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.coin picture {
+  display: block;
+}
+
+.coin img {
   object-fit: contain;
 }
 
@@ -743,7 +751,7 @@ p {
   border: 1px solid rgba(95, 72, 37, 0.32);
   border-radius: var(--radius-sm);
   background:
-    url("/assets/result-frame.png") center / 100% 100% no-repeat,
+    url("/assets/result-frame.webp") center / 100% 100% no-repeat,
     linear-gradient(135deg, rgba(153, 40, 22, 0.04), transparent 30%),
     var(--panel);
   box-shadow: var(--shadow);
@@ -1144,7 +1152,7 @@ p {
     top: 46px;
     height: 760px;
     background:
-      url("/assets/shanshui-bg.png") left bottom / 170vw auto no-repeat,
+      url("/assets/shanshui-bg.webp") left bottom / 170vw auto no-repeat,
       linear-gradient(180deg, transparent 0%, rgba(230, 220, 194, 0.24) 68%, transparent 100%);
     opacity: 0.22;
   }

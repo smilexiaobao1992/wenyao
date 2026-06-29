@@ -127,7 +127,18 @@ export function App() {
             <div className="coin-set">
               {lastCoins.map((coin, index) => (
                 <span className={isCasting ? "coin is-spinning" : "coin"} key={`${coin}-${index}`}>
-                  <img src="/assets/bronze-coin.png" alt="" aria-hidden="true" />
+                  <picture>
+                    <source srcSet="/assets/bronze-coin.webp" type="image/webp" />
+                    <img
+                      src="/assets/bronze-coin.png"
+                      width="224"
+                      height="224"
+                      alt=""
+                      aria-hidden="true"
+                      decoding="async"
+                      fetchPriority="high"
+                    />
+                  </picture>
                   <span>{coin === 3 ? "乾" : "坤"}</span>
                   <small>{coin === 3 ? "三" : "二"}</small>
                 </span>
@@ -184,7 +195,7 @@ export function App() {
             ["6", "叩问 AI", "复制完整卦象信息，再交由 AI 解读。", "/assets/process-6.png"],
           ].map(([number, title, body, image]) => (
             <article className="method-step" key={number}>
-              <img className="step-art" src={image} alt="" aria-hidden="true" />
+              <img className="step-art" src={image} alt="" aria-hidden="true" loading="lazy" decoding="async" />
               <div className="step-heading">
                 <span>{number}</span>
                 <h3>{title}</h3>

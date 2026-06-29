@@ -215,7 +215,7 @@ function ResultPanel({
   const displayLines = activeTab === "transformed" ? transformedLines : visibleLines;
 
   return (
-    <aside className="result-panel" id="result" aria-label="卦象结果">
+    <aside className={`result-panel ${isComplete ? "is-revealed" : ""}`} id="result" aria-label="卦象结果">
       <div className="tabs" role="tablist" aria-label="卦象视图">
         <button
           className={activeTab === "base" ? "is-active" : ""}

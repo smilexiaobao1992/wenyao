@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   buildAiPrompt,
   changingLineNames,
@@ -29,6 +29,7 @@ export function App() {
   const [copied, setCopied] = useState(false);
   const [isCasting, setIsCasting] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [methodVisible, setMethodVisible] = useState(false);
   const [hexagramQuery, setHexagramQuery] = useState("");
   const [selectedHexagramIndex, setSelectedHexagramIndex] = useState(1);
 
@@ -47,6 +48,47 @@ export function App() {
     [isComplete, lines],
   );
   const visibleLines = isComplete ? lines : [...lines, ...EMPTY_LINES].slice(0, 6);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    function updateScrollProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+      root.style.setProperty("--scroll-progress", String(progress));
+    }
+
+    updateScrollProgress();
+    window.addEventListener("scroll", updateScrollProgress, { passive: true });
+    window.addEventListener("resize", updateScrollProgress, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", updateScrollProgress);
+      window.removeEventListener("resize", updateScrollProgress);
+    };
+  }, []);
+
+  useEffect(() => {
+    const section = document.getElementById("method");
+    if (!section || !("IntersectionObserver" in window)) {
+      setMethodVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setMethodVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.2 },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
   const filteredHexagrams = useMemo(() => {
     const query = hexagramQuery.trim().toLowerCase();
     if (!query) return HEXAGRAM_LIBRARY;
@@ -101,6 +143,7 @@ export function App() {
 
   return (
     <main className="page-shell">
+      <div className="scroll-progress" aria-hidden="true" />
       <header className="site-header" aria-label="主导航">
         <a className="brand" href="#top" aria-label="摇一摇首页" onClick={() => setMenuOpen(false)}>
           <img className="brand-seal-img" src="/assets/brand-seal.png" alt="" aria-hidden="true" />
@@ -215,7 +258,7 @@ export function App() {
         />
       </section>
 
-      <section className="method-strip" id="method" aria-label="摇卦逻辑">
+      <section className={`method-strip ${methodVisible ? "is-visible" : ""}`} id="method" aria-label="摇卦逻辑">
         <h2>三枚铜钱，六次成爻</h2>
         <div className="method-steps">
           {[
@@ -375,9 +418,9 @@ function ResultPanel({
       </div>
 
       {activeTab === "moving" ? (
-        <MovingLines lines={lines} isComplete={isComplete} movingLines={movingLines} />
+        <MovingLines key={activeTab} lines={lines} isComplete={isComplete} movingLines={movingLines} />
       ) : (
-        <div className="hexagram-view">
+        <div className="hexagram-view" key={activeTab}>
           <HexagramLines lines={displayLines} />
           <div className="hexagram-copy">
             <h2>{isComplete ? `${displayHexagram.name} · ${displayHexagram.fullName}` : "卦象待成"}</h2>

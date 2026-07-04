@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   buildAiPrompt,
   changingLineNames,
@@ -13,6 +13,7 @@ import {
 const LINE_NAMES = ["初爻", "二爻", "三爻", "四爻", "五爻", "上爻"];
 const PROGRESS_LABELS = ["上爻", "五爻", "四爻", "三爻", "二爻", "初爻"];
 const EMPTY_LINES = [null, null, null, null, null, null];
+const RESET_COOLDOWN_SECONDS = 10;
 const HEXAGRAM_LIBRARY = Object.entries(HEXAGRAMS).map(([index, hexagram]) => ({
   index: Number(index),
   image: `/assets/hexagrams/hexagram-${String(index).padStart(2, "0")}.webp`,
@@ -32,6 +33,8 @@ export function App() {
   const [methodVisible, setMethodVisible] = useState(false);
   const [hexagramQuery, setHexagramQuery] = useState("");
   const [selectedHexagramIndex, setSelectedHexagramIndex] = useState(1);
+  const [resetCooldownSeconds, setResetCooldownSeconds] = useState(0);
+  const previousLineCountRef = useRef(lines.length);
 
   const isComplete = lines.length === 6;
   const original = useMemo(() => (isComplete ? deriveHexagram(lines) : null), [isComplete, lines]);
@@ -89,6 +92,26 @@ export function App() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (lines.length === 6 && previousLineCountRef.current < 6) {
+      setResetCooldownSeconds(RESET_COOLDOWN_SECONDS);
+    }
+    if (lines.length === 0) {
+      setResetCooldownSeconds(0);
+    }
+    previousLineCountRef.current = lines.length;
+  }, [lines.length]);
+
+  useEffect(() => {
+    if (resetCooldownSeconds <= 0) return undefined;
+
+    const timer = window.setTimeout(() => {
+      setResetCooldownSeconds((seconds) => Math.max(0, seconds - 1));
+    }, 1000);
+
+    return () => window.clearTimeout(timer);
+  }, [resetCooldownSeconds]);
+
   const filteredHexagrams = useMemo(() => {
     const query = hexagramQuery.trim().toLowerCase();
     if (!query) return HEXAGRAM_LIBRARY;
@@ -114,6 +137,8 @@ export function App() {
     if (isCasting) return;
 
     if (isComplete) {
+      if (resetCooldownSeconds > 0) return;
+
       setLines([]);
       setLastCoins([3, 2, 3]);
       setActiveTab("base");
@@ -178,9 +203,23 @@ export function App() {
           <p className="hero-copy">
             三枚铜钱，六次成爻，得一卦象。观象察变，叩问心中所感。
           </p>
-          <button className="primary-action" type="button" onClick={castLine} disabled={isCasting}>
+          <button
+            className={`primary-action ${isComplete && resetCooldownSeconds > 0 ? "is-cooling" : ""}`}
+            type="button"
+            aria-disabled={isComplete && resetCooldownSeconds > 0}
+            onClick={castLine}
+            disabled={isCasting}
+          >
             <span className="action-seal" aria-hidden="true">爻</span>
-            {isCasting ? "铜钱翻转中" : isComplete ? "重新起卦" : lines.length === 0 ? "开始起卦" : "继续成爻"}
+            {isCasting
+              ? "铜钱翻转中"
+              : isComplete && resetCooldownSeconds > 0
+                ? `${resetCooldownSeconds}s 后可重起`
+                : isComplete
+                  ? "重新起卦"
+                  : lines.length === 0
+                    ? "开始起卦"
+                    : "继续成爻"}
           </button>
           <p className="quiet-note">娱乐为主，切勿迷信</p>
         </div>

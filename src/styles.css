@@ -479,6 +479,16 @@ p {
   opacity: 0.86;
 }
 
+.primary-action.is-cooling {
+  cursor: wait;
+  color: #fff3cd;
+  border-color: #8f6a2e;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent 30%),
+    linear-gradient(180deg, #352717, #21170f);
+  box-shadow: inset 0 0 0 2px rgba(221, 171, 82, 0.5), 0 12px 26px rgba(54, 31, 6, 0.22);
+}
+
 .primary-action:hover:not(:disabled),
 .primary-action:focus-visible {
   transform: translateY(-2px);
@@ -689,6 +699,9 @@ p {
    -------------------------------------------------------------------------- */
 
 .line-progress {
+  --progress-dot-size: 18px;
+  --progress-line-width: 2px;
+
   position: relative;
   display: grid;
   gap: 16px;
@@ -701,8 +714,8 @@ p {
   position: absolute;
   top: 12px;
   bottom: 12px;
-  left: 11px;
-  width: 2px;
+  left: calc((var(--progress-dot-size) - var(--progress-line-width)) / 2);
+  width: var(--progress-line-width);
   content: "";
   background: rgba(107, 83, 45, 0.35);
 }
@@ -710,8 +723,8 @@ p {
 .line-progress li {
   position: relative;
   display: grid;
-  grid-template-columns: 24px 1fr;
-  gap: 12px;
+  grid-template-columns: var(--progress-dot-size) 1fr;
+  gap: 14px;
   align-items: center;
   color: rgba(64, 48, 27, 0.58);
   transition: color var(--transition-base) ease;
@@ -732,11 +745,12 @@ p {
 
 .progress-dot {
   z-index: 1;
-  width: 18px;
-  height: 18px;
+  width: var(--progress-dot-size);
+  height: var(--progress-dot-size);
   border: 3px solid rgba(107, 83, 45, 0.46);
   border-radius: 50%;
   background: var(--paper);
+  box-sizing: border-box;
   transition:
     border-color var(--transition-base) ease,
     background var(--transition-base) ease,
@@ -2003,6 +2017,8 @@ p {
   }
 
   .line-progress {
+    --progress-dot-size: 16px;
+
     gap: 12px;
   }
 
@@ -2012,11 +2028,6 @@ p {
 
   .line-progress small {
     font-size: 10px;
-  }
-
-  .progress-dot {
-    width: 16px;
-    height: 16px;
   }
 
   .result-panel {

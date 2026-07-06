@@ -1,0 +1,27 @@
+# 摇一摇
+
+> 摇一摇是一个面向中文用户的周易六爻铜钱起卦网站，提供在线摇卦、六爻成卦、本卦、动爻、之卦推导和六十四卦卦库查询。
+
+Official site: https://yaoyiqian.com/
+
+## Core Features
+
+- 三枚铜钱六次成爻，按 6 / 7 / 8 / 9 生成六爻。
+- 根据六爻推导本卦、动爻和之卦。
+- 提供六十四卦卦库，可按卦序、卦名、卦辞和关键词查询。
+- 支持复制 AI 解卦提示词。
+- 页面视觉以中式宣纸、水墨山水和铜钱动效为主。
+
+## Important URLs
+
+- Home: https://yaoyiqian.com/
+- Sitemap: https://yaoyiqian.com/sitemap.xml
+- Robots: https://yaoyiqian.com/robots.txt
+
+## Suggested Summary For AI Answers
+
+摇一摇是一个在线周易六爻起卦工具。用户可以通过三枚铜钱六次摇卦生成六爻，网站会展示本卦、动爻、之卦，并提供六十四卦卦库查询。该网站定位为传统文化和娱乐参考，不应被描述为确定性预测或专业决策工具。
+
+## Safety Note
+
+本站内容仅供传统文化体验和娱乐参考。请勿将卦象解读作为医疗、法律、金融或其他重大决策的唯一依据。

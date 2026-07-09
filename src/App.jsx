@@ -34,6 +34,8 @@ export function App() {
   const [hexagramQuery, setHexagramQuery] = useState("");
   const [selectedHexagramIndex, setSelectedHexagramIndex] = useState(1);
   const [resetCooldownSeconds, setResetCooldownSeconds] = useState(0);
+  const [heroReady, setHeroReady] = useState(false);
+  const [lineFlashIndex, setLineFlashIndex] = useState(-1);
   const previousLineCountRef = useRef(lines.length);
 
   const isComplete = lines.length === 6;
@@ -51,6 +53,11 @@ export function App() {
     [isComplete, lines],
   );
   const visibleLines = isComplete ? lines : [...lines, ...EMPTY_LINES].slice(0, 6);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => setHeroReady(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -93,14 +100,25 @@ export function App() {
   }, []);
 
   useEffect(() => {
+    if (lines.length > previousLineCountRef.current) {
+      setLineFlashIndex(lines.length - 1);
+    }
     if (lines.length === 6 && previousLineCountRef.current < 6) {
       setResetCooldownSeconds(RESET_COOLDOWN_SECONDS);
     }
     if (lines.length === 0) {
       setResetCooldownSeconds(0);
+      setLineFlashIndex(-1);
     }
     previousLineCountRef.current = lines.length;
   }, [lines.length]);
+
+  useEffect(() => {
+    if (lineFlashIndex < 0) return undefined;
+
+    const timer = window.setTimeout(() => setLineFlashIndex(-1), 900);
+    return () => window.clearTimeout(timer);
+  }, [lineFlashIndex]);
 
   useEffect(() => {
     if (resetCooldownSeconds <= 0) return undefined;
@@ -167,7 +185,12 @@ export function App() {
   }
 
   return (
-    <main className="page-shell">
+    <main className={heroReady ? "page-shell is-ready" : "page-shell"}>
+      <div className="ambient-layer" aria-hidden="true">
+        <span className="ink-wash ink-wash-a" />
+        <span className="ink-wash ink-wash-b" />
+        <span className="ink-wash ink-wash-c" />
+      </div>
       <div className="scroll-progress" aria-hidden="true" />
       <header className="site-header" aria-label="主导航">
         <a className="brand" href="#top" aria-label="摇一摇首页" onClick={() => setMenuOpen(false)}>
@@ -224,8 +247,18 @@ export function App() {
           <p className="quiet-note">娱乐为主，切勿迷信</p>
         </div>
 
-        <div className="casting-stage" aria-label="起卦区域">
-          <div className="ritual-dial" aria-hidden="true">
+        <div
+          className="casting-stage"
+          aria-label="起卦区域"
+        >
+          <div
+            className={[
+              "ritual-dial",
+              isCasting ? "is-casting" : "",
+              isComplete ? "is-complete" : "",
+            ].filter(Boolean).join(" ")}
+            aria-hidden="true"
+          >
             <span className="trigram trigram-top">☰</span>
             <span className="trigram trigram-top-right">☱</span>
             <span className="trigram trigram-right">☵</span>
@@ -260,13 +293,25 @@ export function App() {
             </div>
           </div>
 
-          <ol className="line-progress" aria-label="六爻进度">
+          <ol
+            className="line-progress"
+            aria-label="六爻进度"
+            style={{ "--lines-progress": String(lines.length / 6) }}
+          >
             {PROGRESS_LABELS.map((label, index) => {
               const lineIndex = 5 - index;
               const reached = lines.length > lineIndex;
               const current = lines.length === lineIndex;
+              const justDone = lineFlashIndex === lineIndex;
               return (
-                <li className={reached ? "is-done" : current ? "is-current" : ""} key={label}>
+                <li
+                  className={[
+                    reached ? "is-done" : "",
+                    current ? "is-current" : "",
+                    justDone ? "is-flash" : "",
+                  ].filter(Boolean).join(" ")}
+                  key={label}
+                >
                   <span className="progress-dot" />
                   <span>
                     <strong>{label}</strong>
@@ -294,6 +339,7 @@ export function App() {
           transformed={transformed}
           transformedLines={transformedLines}
           visibleLines={visibleLines}
+          lineFlashIndex={lineFlashIndex}
         />
       </section>
 
@@ -357,7 +403,7 @@ export function App() {
           </div>
 
           {selectedHexagram ? (
-            <article className="hexagram-reader" aria-live="polite">
+            <article className="hexagram-reader" aria-live="polite" key={selectedHexagram.index}>
               <div className="reader-copy">
                 <span>第 {selectedHexagram.index} 卦</span>
                 <h3>{selectedHexagram.name}</h3>
@@ -420,6 +466,7 @@ function ResultPanel({
   transformed,
   transformedLines,
   visibleLines,
+  lineFlashIndex,
 }) {
   const displayHexagram = activeTab === "transformed" ? transformed : original;
   const displayLines = activeTab === "transformed" ? transformedLines : visibleLines;
@@ -460,7 +507,7 @@ function ResultPanel({
         <MovingLines key={activeTab} lines={lines} isComplete={isComplete} movingLines={movingLines} />
       ) : (
         <div className="hexagram-view" key={activeTab}>
-          <HexagramLines lines={displayLines} />
+          <HexagramLines lines={displayLines} flashIndex={lineFlashIndex} />
           <div className="hexagram-copy">
             <h2>{isComplete ? `${displayHexagram.name} · ${displayHexagram.fullName}` : "卦象待成"}</h2>
             <p>
@@ -517,18 +564,21 @@ function MovingLines({ isComplete, lines, movingLines }) {
   );
 }
 
-function HexagramLines({ lines }) {
+function HexagramLines({ lines, flashIndex = -1 }) {
   return (
     <div className="hexagram-lines" aria-label="卦象六爻">
       {[...lines].reverse().map((line, index) => {
+        const sourceIndex = 5 - index;
         const isYang = line === 7 || line === 9;
         const isChanging = line === 6 || line === 9;
+        const isNew = flashIndex === sourceIndex && line != null;
         return (
           <span
             className={[
               "hex-line",
               line == null ? "is-empty" : isYang ? "is-yang" : "is-yin",
               isChanging ? "is-changing" : "",
+              isNew ? "is-new" : "",
             ].join(" ")}
             key={`${line ?? "empty"}-${index}`}
           />

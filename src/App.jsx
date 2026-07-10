@@ -60,6 +60,17 @@ export function App() {
   }, []);
 
   useEffect(() => {
+    if (!menuOpen) return undefined;
+
+    function closeMenuOnEscape(event) {
+      if (event.key === "Escape") setMenuOpen(false);
+    }
+
+    window.addEventListener("keydown", closeMenuOnEscape);
+    return () => window.removeEventListener("keydown", closeMenuOnEscape);
+  }, [menuOpen]);
+
+  useEffect(() => {
     const root = document.documentElement;
     function updateScrollProgress() {
       const scrollTop = window.scrollY;
@@ -119,6 +130,23 @@ export function App() {
     const timer = window.setTimeout(() => setLineFlashIndex(-1), 900);
     return () => window.clearTimeout(timer);
   }, [lineFlashIndex]);
+
+  useEffect(() => {
+    if (!isComplete) return undefined;
+
+    const frame = window.requestAnimationFrame(() => {
+      const result = document.getElementById("result");
+      if (!result) return;
+
+      const bounds = result.getBoundingClientRect();
+      if (bounds.top >= 0 && bounds.bottom <= window.innerHeight) return;
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      result.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [isComplete]);
 
   useEffect(() => {
     if (resetCooldownSeconds <= 0) return undefined;
@@ -201,7 +229,6 @@ export function App() {
           <a href="#method" onClick={() => setMenuOpen(false)}>玩法</a>
           <a href="#hexagrams" onClick={() => setMenuOpen(false)}>卦库</a>
           <a href="#result" onClick={() => setMenuOpen(false)}>卦象</a>
-          <a href="#ai" onClick={() => setMenuOpen(false)}>AI 解卦</a>
         </nav>
         <button
           className={menuOpen ? "menu-button is-open" : "menu-button"}
@@ -216,6 +243,7 @@ export function App() {
           <span />
         </button>
       </header>
+      {menuOpen ? <div className="menu-scrim" aria-hidden="true" onClick={() => setMenuOpen(false)} /> : null}
 
       <section className="hero" id="top">
         <div className="intro-panel">
@@ -230,8 +258,9 @@ export function App() {
             className={`primary-action ${isComplete && resetCooldownSeconds > 0 ? "is-cooling" : ""}`}
             type="button"
             aria-disabled={isComplete && resetCooldownSeconds > 0}
+            aria-live="polite"
             onClick={castLine}
-            disabled={isCasting}
+            disabled={isCasting || (isComplete && resetCooldownSeconds > 0)}
           >
             <span className="action-seal" aria-hidden="true">爻</span>
             {isCasting
@@ -528,10 +557,7 @@ function ResultPanel({
 
       <div className="result-actions" id="ai">
         <button className="ask-ai" type="button" disabled={!isComplete} onClick={onCopy}>
-          叩问 AI
-        </button>
-        <button className="copy-button" type="button" disabled={!isComplete} onClick={onCopy}>
-          {copied ? "已复制" : "复制解卦信息"}
+          {copied ? "已复制，可粘贴给 AI" : "复制 AI 解读提示词"}
         </button>
       </div>
       <p className="result-footnote">娱乐为主，切勿迷信</p>

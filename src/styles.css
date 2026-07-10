@@ -159,13 +159,12 @@ a {
 .page-shell::before {
   display: block;
   top: 56px;
-  right: 0;
-  left: 0;
+  right: -24px;
+  left: -24px;
   height: 670px;
   background:
-    url("/assets/shanshui-bg.webp") left bottom / min(860px, 58vw) auto no-repeat,
-    url("/assets/shanshui-bg.webp") right bottom / min(780px, 52vw) auto no-repeat,
-    linear-gradient(180deg, transparent 0%, rgba(230, 220, 194, 0.26) 64%, transparent 100%);
+    linear-gradient(180deg, rgba(243, 234, 214, 0.22), transparent 34%, rgba(230, 220, 194, 0.18) 82%, rgba(243, 234, 214, 0.28)),
+    url("/assets/shanshui-bg.webp") center center / cover no-repeat;
   mix-blend-mode: multiply;
   opacity: 0.26;
   -webkit-mask-image: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.16) 42px, #000 138px, #000 78%, transparent 100%);
@@ -418,8 +417,8 @@ a {
 
 @keyframes heroRise {
   from {
-    opacity: 0;
-    transform: translateY(28px);
+    opacity: 0.62;
+    transform: translateY(14px);
   }
 
   to {
@@ -447,8 +446,8 @@ a {
 
 @keyframes readerEnter {
   from {
-    opacity: 0;
-    transform: translateY(12px);
+    opacity: 0.7;
+    transform: translateY(6px);
   }
 
   to {
@@ -619,6 +618,10 @@ a {
   border-radius: var(--radius-md);
 }
 
+.menu-scrim {
+  display: none;
+}
+
 /* --------------------------------------------------------------------------
    Hero — desktop base (>1120px)
    -------------------------------------------------------------------------- */
@@ -636,15 +639,15 @@ a {
 }
 
 .page-shell.is-ready .intro-panel {
-  animation: heroRise 0.9s var(--ease-ink) both;
+  animation: heroRise 0.5s var(--ease-ink) both;
 }
 
 .page-shell.is-ready .casting-stage {
-  animation: heroRise 0.9s var(--ease-ink) 0.12s both;
+  animation: heroRise 0.5s var(--ease-ink) 0.05s both;
 }
 
 .page-shell.is-ready .result-panel {
-  animation: heroRise 0.9s var(--ease-ink) 0.24s both;
+  animation: heroRise 0.5s var(--ease-ink) 0.1s both;
 }
 
 .intro-panel {
@@ -1093,6 +1096,7 @@ p {
    -------------------------------------------------------------------------- */
 
 .result-panel {
+  scroll-margin-top: 82px;
   position: relative;
   min-height: 480px;
   margin-top: 34px;
@@ -1292,8 +1296,7 @@ p {
   z-index: 1;
 }
 
-.ask-ai,
-.copy-button {
+.ask-ai {
   min-height: 48px;
   border-radius: var(--radius-lg);
   cursor: pointer;
@@ -1305,20 +1308,17 @@ p {
     filter var(--transition-fast) ease;
 }
 
-.ask-ai:hover:not(:disabled),
-.copy-button:hover:not(:disabled) {
+.ask-ai:hover:not(:disabled) {
   transform: translateY(-1px);
   filter: brightness(1.05);
 }
 
-.ask-ai:focus-visible,
-.copy-button:focus-visible {
+.ask-ai:focus-visible {
   outline: 2px solid var(--cinnabar);
   outline-offset: 3px;
 }
 
-.ask-ai:active:not(:disabled),
-.copy-button:active:not(:disabled) {
+.ask-ai:active:not(:disabled) {
   transform: translateY(0);
   transition-duration: 80ms;
 }
@@ -1352,14 +1352,7 @@ p {
   }
 }
 
-.copy-button {
-  border: 1px solid rgba(95, 72, 37, 0.28);
-  color: #5a4b35;
-  background: rgba(250, 245, 232, 0.62);
-}
-
-.ask-ai:disabled,
-.copy-button:disabled {
+.ask-ai:disabled {
   cursor: not-allowed;
   opacity: 0.44;
 }
@@ -1704,7 +1697,7 @@ p {
   gap: 22px;
   align-items: start;
   padding: 24px;
-  animation: readerEnter 0.5s var(--ease-ink) both;
+  animation: readerEnter 0.28s var(--ease-ink) both;
 }
 
 .reader-copy {
@@ -1944,9 +1937,7 @@ p {
   .page-shell::before {
     top: 46px;
     height: 760px;
-    background:
-      url("/assets/shanshui-bg.webp") left bottom / 170vw auto no-repeat,
-      linear-gradient(180deg, transparent 0%, rgba(230, 220, 194, 0.24) 68%, transparent 100%);
+    background-position: center, 14% center;
     opacity: 0.22;
   }
 
@@ -2069,13 +2060,16 @@ p {
   }
 
   .method-steps {
-    grid-template-columns: 1fr;
-    gap: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
   }
 
   .method-step {
     min-height: 0;
-    padding: 18px 0;
+    padding: 16px 12px;
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 
   .step-heading {
@@ -2114,27 +2108,30 @@ p {
   }
 
   .index-list {
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(170px, 1fr);
-    max-height: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: 8px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-flow: row;
+    max-height: 260px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-snap-type: none;
   }
 
   .index-list button {
-    scroll-snap-align: start;
-  }
-
-  .index-list button {
-    grid-template-columns: 34px 38px 1fr;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    min-height: 64px;
+    padding: 8px 4px;
     border-right: 1px solid rgba(95, 72, 37, 0.1);
-    border-bottom: 0;
+    border-bottom: 1px solid rgba(95, 72, 37, 0.1);
+    text-align: center;
   }
 
   .index-list strong {
     font-size: 18px;
+  }
+
+  .index-list small {
+    display: none;
   }
 
   .hexagram-reader,
@@ -2269,15 +2266,18 @@ p {
 
   .site-header .desktop-nav {
     position: absolute;
-    top: calc(100% + 14px);
-    right: 16px;
+    top: 100%;
+    right: 0;
+    left: 0;
     z-index: 30;
     display: none;
-    min-width: 168px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-width: 0;
     gap: 0;
-    padding: 8px;
-    border: 1px solid rgba(95, 72, 37, 0.28);
-    border-radius: var(--radius-md);
+    padding: 8px 18px;
+    border-top: 1px solid rgba(95, 72, 37, 0.2);
+    border-bottom: 1px solid rgba(95, 72, 37, 0.28);
+    border-radius: 0;
     background: rgba(247, 240, 222, 0.96);
     box-shadow: 0 18px 40px rgba(55, 37, 13, 0.18);
     backdrop-filter: blur(14px);
@@ -2290,7 +2290,16 @@ p {
   .site-header .desktop-nav a {
     padding: 12px 16px;
     font-size: 16px;
+    text-align: center;
     white-space: nowrap;
+  }
+
+  .menu-scrim {
+    position: fixed;
+    inset: 60px 0 0;
+    z-index: 15;
+    display: block;
+    background: rgba(36, 29, 20, 0.16);
   }
 
   .menu-button.is-open span:nth-child(1) {
@@ -2383,8 +2392,7 @@ p {
   }
 
   .tabs button,
-  .ask-ai,
-  .copy-button {
+  .ask-ai {
     font-size: 16px;
   }
 
@@ -2414,16 +2422,19 @@ p {
 
   .step-art,
   .step-line-art {
-    width: 96px;
-    height: 62px;
+    width: 72px;
+    height: 48px;
+    margin-bottom: 6px;
   }
 
   .method-step .step-heading h3 {
-    font-size: 17px;
+    font-size: 15px;
   }
 
   .method-step p {
-    font-size: 13px;
+    margin-top: 7px;
+    font-size: 12px;
+    line-height: 1.55;
   }
 
   .hexagram-library {
@@ -2497,8 +2508,7 @@ p {
     gap: 10px;
   }
 
-  .ask-ai,
-  .copy-button {
+  .ask-ai {
     min-height: 44px;
     font-size: 15px;
   }
